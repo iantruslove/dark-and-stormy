@@ -26,6 +26,7 @@
          –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <link rel="icon" type="image/png" href="images/favicon.png">
 
+    <script src="js/fow.js"></script>
   </head>
   <body>
 
@@ -34,30 +35,17 @@
     <div class="container">
       <div class="row">
         <div class="twelve columns" style="margin-top: 10%">
-          <h1>dark-and-stormy</h1>
-          <p>Visualizing authentication attempts and geo locations.</p>
+          <h1>Login Succeeded!</h1>
         </div>
       </div>
-      
       <div class="row">
-        <div class="six columns">
-          <h3>Log in:</h3>
-          <form action="/login" method="post">
-            <label for="username">User name</label>
-            <input id="username" name="username" class="u-full-width" type="text">
-            <label for="password">Password</label>
-            <input id="password" name="password" class="u-full-width" type="password">
-            <input class="button-primary" type="submit">
-          </form>
+        <div class="twelve columns">
+          <script> window.fow.win(); </script>
         </div>
-        <div class="six columns">
-          <div class="u-pull-right">
-            <!-- TODO: Style this as an aside or a sidebar, and stop it floating right for narrower widths --->
-            <h4>Valid logins:</h4>
-            <ul>
-              <li>guest / guest</li>
-            </ul>
-          </div>
+      </div>
+      <div class="row">
+        <div class="twelve columns">
+          <a class="button button-primary" href="/">Start over</a>
         </div>
       </div>
     </div>
@@ -71,3 +59,4 @@
 
   </body>
 </html>
+
