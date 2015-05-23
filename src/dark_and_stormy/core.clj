@@ -1,17 +1,28 @@
 (ns dark-and-stormy.core
   (:require [clojure.tools.logging :as log]
-            [dark-and-stormy.system :as system]))
+            [dark-and-stormy.system :as system])
+  (:gen-class))
 
 (defonce system (atom {}))
 
-(defn start! []
+(defn init!
+  "Initializes an unstarted system."
+  []
+  (reset! system (system/init)))
+
+(defn start!
+  "Starts the system."
+  []
   (log/info "----> Got a deckchair? Here we go! <----")
   (swap! system system/start))
 
-(defn stop! []
+(defn stop!
+  "Stops the system."
+  []
   (swap! system system/stop)
   (log/info "----> Fin. <----"))
 
 (defn -main [& args]
-  (reset! system (system/init))
-  (start!))
+  (init!)
+  (start!)
+  (println "Go!"))
