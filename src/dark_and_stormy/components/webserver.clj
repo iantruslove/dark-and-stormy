@@ -4,16 +4,13 @@
             [dark-and-stormy.components.config :as config]
             [ring.adapter.jetty :as jetty]))
 
-(defn say-hi [req]
-  {:status 200 :body "Hi"})
-
 (defrecord JettyWebserver [config server handler]
   component/Lifecycle
   (start [this]
     (if-not (:server this)
       (let [port (config/config config :webserver :port)]
         (log/info "Starting JettyWebserver on port" port)
-        (assoc this :server (jetty/run-jetty #'say-hi {:port port :join? false})))
+        (assoc this :server (jetty/run-jetty handler {:port port :join? false})))
       (do
         (log/warn "Skipping starting webserver - it's already started")
         this)))
@@ -28,3 +25,7 @@
         (log/warn "Skipping stopping webserver - it's not running")
         this))))
 
+(defn new
+  "Return a new unstarted webserver component."
+  [handler]
+  (map->JettyWebserver {:handler handler}))

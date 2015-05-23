@@ -2,7 +2,8 @@
   (:require [com.stuartsierra.component :as component]
             [dark-and-stormy.components.config :as config]
             [dark-and-stormy.components.nrepl :as nrepl]
-            [dark-and-stormy.components.webserver :as webserver]))
+            [dark-and-stormy.components.webserver :as webserver]
+            [dark-and-stormy.api :as api]))
 
 (defn start [system]
   (component/start system))
@@ -13,7 +14,7 @@
 (defn init []
   (-> (component/system-map
        :config (config/map->Config {})
-       :webserver (webserver/map->JettyWebserver {})
+       :webserver (webserver/new #' api/routes)
        :nrepl (nrepl/map->Nrepl {}))
       (component/system-using
        {:webserver [:config]

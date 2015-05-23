@@ -9,7 +9,7 @@ The Undesirables: where in the world are unsuccessful login attempts coming from
 * Start up the dark-and-stormy web server:
   * `lein run` if you can take the Leiningen overhead.
   * `lein uberjar && java -jar target/dark-and-stormy-0.1.0-SNAPSHOT-standalone.jar` if you're doing a prod-like run.
-* `curl http://localhost:8080`
+* Open [localhost:8080](http://localhost:8080)
 
 ## Plan
 

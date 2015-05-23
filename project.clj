@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :resource-paths ["etc"]
+  :resource-paths ["etc" "resources"]
   :main dark-and-stormy.core
   :dependencies [[cider/cider-nrepl "0.8.2"]
                  [cheshire "5.4.0"]
@@ -11,6 +11,7 @@
                  [com.stormpath.sdk/stormpath-sdk-httpclient "1.0.RC4.2"
                   :exclusions [org.apache.httpcomponents/httpclient]]
                  [com.stuartsierra/component "0.2.3"]
+                 [compojure "1.3.4"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jmdk/jmxtools
