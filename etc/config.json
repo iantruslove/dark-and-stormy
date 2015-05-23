@@ -1,0 +1,9 @@
+{
+  "nrepl": {
+    "port": 57777,
+    "cider_middleware": true
+  },
+  "webserver": {
+    "port": 8080
+  }
+}
