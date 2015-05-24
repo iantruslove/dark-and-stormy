@@ -4,7 +4,13 @@
             [dark-and-stormy.geolocation.ip-api-com :as ip-api]))
 
 (defmulti geolocate
-  "Returns a [lat lon] pair for the given IP address."
+  "Returns a map of geo data for the given IP
+  address. Includes:
+  :lat
+  :lon
+  :country-code - ISO 3166 country code e.g. \"US\" - http://geotags.com/iso3166/countries.html
+  :region - e.g. \"CO\"
+  :timezone - e.g. \"America/Denver\""
   {:arglists '([provider ip])}
   (fn [provider ip] provider))
 

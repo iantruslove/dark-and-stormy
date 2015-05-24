@@ -3,12 +3,18 @@
             [dark-and-stormy.util.stats :as stats]))
 
 (def sample-cities
-  {:denver [39.99 -113.2]
-   :new-york [38.7 -82.1]
-   :san-francisco [37.3 -129.0]
-   :chicago [45.4 -99.1]
-   :san-mateo [37.2 -129.1]
-   :london [52.0 0.0]})
+  {:denver {:lat 39.99 :lon -113.2 :country-code "US" :region "CO"
+            :timezone "America/Denver"}
+   :new-york {:lat 38.7 :lon -82.1 :country-code "US" :region "NY"
+              :timezone "America/New_York"}
+   :san-francisco {:lat 37.3 :lon -129.0 :country-code "US"
+                   :region "CA" :timezone "America/Los_Angeles"}
+   :chicago {:lat 45.4 :lon -99.1 :country-code "US" :region "IL"
+             :timezone "America/Chicago"}
+   :san-mateo {:lat 37.2 :lon -129.1 :country-code "US" :region "CA"
+               :timezone "America/Los_Angeles"}
+   :london {:lat 52.0 :lon 0.0 :country-code "GB"
+            :timezone "Europe/London"}})
 
 (def geolocation-lookup-failure-probability 0.2)
 
