@@ -1,12 +1,12 @@
 (ns dark-and-stormy.auth
   (:require [clojure.tools.logging :as log]
-            [dark-and-stormy.util :as util]))
+            [dark-and-stormy.util.stats :as stats]))
 
 (def authc-failure-probability 0.3)
 
 (def authc-avg-latency 200 #_ msecs)
 
-(def latency (partial util/sample authc-avg-latency))
+(def latency (partial stats/sample authc-avg-latency))
 
 (defn authenticate
   "Returns truthy to indicate a successful auth attempt, and throws exceptions
