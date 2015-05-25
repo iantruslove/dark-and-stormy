@@ -2,6 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [dark-and-stormy.components.config :as config]
+            [dark-and-stormy.status :as status]
             [ring.adapter.jetty :as jetty]))
 
 (defrecord JettyWebserver [config server handler]
@@ -18,12 +19,19 @@
   (stop [this]
     (if (:server this)
       (do (log/info "Stopping JettyWebserver")
-          (update-in this [:server] (fn [jetty]
-                                      (.stop jetty)
-                                      nil)))
+          (update-in this [:server]
+                     (fn [^org.eclipse.jetty.util.component.LifeCycle jetty]
+                       (.stop jetty)
+                       nil)))
       (do
         (log/warn "Skipping stopping webserver - it's not running")
-        this))))
+        this)))
+
+  status/Status
+  (status [this]
+    (if (:server this)
+      (str "STARTED. Listening on port " (config/config (:config this) :webserver :port))
+      "STOPPED.")))
 
 (defn new
   "Return a new unstarted webserver component."

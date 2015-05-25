@@ -1,6 +1,7 @@
 (ns dark-and-stormy.core
   (:require [clojure.tools.logging :as log]
-            [dark-and-stormy.system :as system])
+            [dark-and-stormy.system :as system]
+            [dark-and-stormy.quotes :as quote])
   (:gen-class))
 
 (defonce system (atom {}))
@@ -26,4 +27,5 @@
   (init!)
   (start!)
   (.addShutdownHook (Runtime/getRuntime) (Thread. #(stop!)))
-  (println "Go!"))
+  (system/status @system)
+  (println (str "\n" (quote/by :hemingway))))

@@ -3,7 +3,8 @@
             [clj-http.client :as http]
             [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
-            [dark-and-stormy.components.config :as config])
+            [dark-and-stormy.components.config :as config]
+            [dark-and-stormy.status :as status])
   (:refer-clojure :exclude [send]))
 
 (defn make-url
@@ -64,7 +65,7 @@
       (if-let [url (config/config config :metrics :url)]
         (do
           (log/info "Starting metrics service using" url)
-          (doto (assoc this :url url)
+          (doto (assoc this :url url) ;; :url is used as the "running" flag
             ensure-all-templates))
         (throw (Exception. "Missing config url.")))
       (do
@@ -78,4 +79,10 @@
         (dissoc this :url))
       (do
         (log/warn "Skipping stopping metrics service - it's not running")
-        this))))
+        this)))
+
+  status/Status
+  (status [this]
+    (if (:url this)
+      (str "STARTED. Using ES at " (:url this))
+      "STOPPED.")))

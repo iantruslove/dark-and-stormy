@@ -3,7 +3,8 @@
             [clojure.tools.logging :as log]
             [clojure.tools.nrepl.server :as nrepl]
             [com.stuartsierra.component :as component]
-            [dark-and-stormy.components.config :as config]))
+            [dark-and-stormy.components.config :as config]
+            [dark-and-stormy.status :as status]))
 
 (defn nrepl-opts [nrepl-config]
   (let [{:keys [port] insert-cider-middleware :cider_middleware} nrepl-config]
@@ -26,7 +27,13 @@
     (if (:server this)
       (do (log/info "Stopping nREPL")
           (update-in this [:server] (fn [nrepl] (nrepl/stop-server nrepl)
-                                     nil)))
+                                      nil)))
       (do
         (log/warn "Skipping stopping nREPL - it's not running")
-        this))))
+        this)))
+
+  status/Status
+  (status [this]
+    (if (:server this)
+      (str "STARTED. Listening on port " (config/config (:config this) :nrepl :port))
+      "STOPPED.")))
