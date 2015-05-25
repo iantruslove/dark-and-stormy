@@ -19,8 +19,8 @@
     (if (:server this)
       (do (log/info "Stopping JettyWebserver")
           (update-in this [:server] (fn [jetty]
-                                     (.stop jetty)
-                                     nil)))
+                                      (.stop jetty)
+                                      nil)))
       (do
         (log/warn "Skipping stopping webserver - it's not running")
         this))))
