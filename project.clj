@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :resource-paths ["etc" "resources"]
   :main dark-and-stormy.core
+  :global-vars {clojure.core/*warn-on-reflection* true}
   :dependencies [[cider/cider-nrepl "0.8.2"]
                  [cheshire "5.4.0"]
                  [com.stormpath.sdk/stormpath-sdk-api "1.0.RC4.2"]
