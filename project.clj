@@ -7,6 +7,7 @@
   :main dark-and-stormy.core
   :global-vars {clojure.core/*warn-on-reflection* true}
   :dependencies [[cider/cider-nrepl "0.8.2"]
+                 [clj-http "1.1.2"]
                  [cheshire "5.4.0"]
                  [com.stormpath.sdk/stormpath-sdk-api "1.0.RC4.2"]
                  [com.stormpath.sdk/stormpath-sdk-httpclient "1.0.RC4.2"
@@ -23,5 +24,4 @@
                  [org.slf4j/slf4j-log4j12 "1.7.1"]
                  [ring "1.4.0-RC1"]
                  [sonian/carica "1.1.0"]]
-  :profiles {:dev {:plugins [[lein-deps-tree "0.1.2"]]
-                   :dependencies [[clj-http "1.1.2"]]}})
+  :profiles {:dev {:plugins [[lein-deps-tree "0.1.2"]]}})
