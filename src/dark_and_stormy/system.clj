@@ -28,6 +28,6 @@
        :webserver (webserver/new #'api/routes)
        :nrepl (nrepl/map->Nrepl {}))
       (component/system-using
-       {:webserver [:config]
+       {:webserver [:config :metrics]
         :metrics [:config]
         :nrepl [:config]})))
