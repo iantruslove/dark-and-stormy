@@ -9,7 +9,7 @@
   (start [this]
     (log/info "Starting Config")
     ;; Reset all of Carica's state
-    (assoc this :config (carica/configurer (io/resource "config.json"))))
+    (assoc this :config (carica/configurer (io/resource "config.edn"))))
 
   (stop [this]
     (log/info "Stopping Config")
