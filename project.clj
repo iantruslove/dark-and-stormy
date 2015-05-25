@@ -5,7 +5,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :resource-paths ["etc" "resources"]
   :main dark-and-stormy.core
-  :global-vars {clojure.core/*warn-on-reflection* true}
   :dependencies [[cider/cider-nrepl "0.8.2"]
                  [clj-http "1.1.2"]
                  [cheshire "5.4.0"]
@@ -25,4 +24,5 @@
                  [org.slf4j/slf4j-log4j12 "1.7.1"]
                  [ring "1.4.0-RC1"]
                  [sonian/carica "1.1.0"]]
-  :profiles {:dev {:plugins [[lein-deps-tree "0.1.2"]]}})
+  :profiles {:dev {:global-vars {clojure.core/*warn-on-reflection* true}
+                   :plugins [[lein-deps-tree "0.1.2"]]}})
