@@ -25,4 +25,5 @@
 (defn -main [& args]
   (init!)
   (start!)
+  (.addShutdownHook (Runtime/getRuntime) (Thread. #(stop!)))
   (println "Go!"))
