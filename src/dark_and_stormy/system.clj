@@ -25,7 +25,7 @@
   (-> (component/system-map
        :config (config/map->Config {})
        :metrics (metrics/map->Metrics {})
-       :webserver (webserver/new #' api/routes)
+       :webserver (webserver/new #'api/routes)
        :nrepl (nrepl/map->Nrepl {}))
       (component/system-using
        {:webserver [:config]
