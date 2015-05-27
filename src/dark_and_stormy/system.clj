@@ -9,10 +9,10 @@
             [doric.core :as doric]))
 
 (defn start [system]
-  (component/start system))
+  (component/start-system system))
 
 (defn stop [system]
-  (component/stop system))
+  (component/stop-system system))
 
 (defn status [system]
   (println "System status:")
