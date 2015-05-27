@@ -3,6 +3,8 @@
             [dark-and-stormy.geolocation.flaky :as flaky]
             [dark-and-stormy.geolocation.ip-api-com :as ip-api]))
 
+;; TODO: perhaps the return here could be a record, or it could have a
+;; validated shape using Prismatic Schema.
 (defmulti geolocate
   "Returns a map of geo data for the given IP
   address. Includes:

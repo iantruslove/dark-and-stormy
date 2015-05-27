@@ -50,6 +50,10 @@
   [this]
   (config/config (:config this) :metrics :index))
 
+;; TODO: I wonder whether this wants to be a protocol...
+;; TODO: something else is trying to escape this, or the Metrics
+;; instance. Look at how `this` gets used - it's just a carrier for
+;; config.
 (defn send
   "Sends a data payload to the metrics datastore.
   `data` should be a map."
