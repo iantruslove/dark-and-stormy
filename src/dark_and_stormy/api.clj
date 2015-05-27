@@ -23,11 +23,9 @@
      :user (get-in req [:params :username])}))
 
 (defn login-handler [req]
-  (try
-    (apply auth/authenticate ((juxt :username :password) (:params req)))
+  (if (apply auth/authenticate ((juxt :username :password) (:params req)))
     (response/redirect "/success.html")
-    (catch Exception _
-      (response/redirect "/failure.html"))))
+    (response/redirect "/failure.html")))
 
 (defroutes routes
   (GET "/" [] (response/resource-response "public/index.html"))

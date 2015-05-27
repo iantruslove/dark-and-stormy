@@ -9,8 +9,7 @@
 (def latency (partial stats/sample authc-avg-latency))
 
 (defn authenticate
-  "Returns truthy to indicate a successful auth attempt, and throws exceptions
-  if authc fails.
+  "Returns truthy to indicate a successful auth attempt, false otherwise.
 
   Right now, guest/guest is the only allowed user/pass combo, and the
   function will fail to authenticate every so often just
@@ -19,9 +18,5 @@
   (Thread/sleep (latency))
   (if (and (> (rand) authc-failure-probability)
            (= [username password] ["guest" "guest"]))
-    (do
-      (log/info "Auth succeeded")
-      true)
-    (do
-      (log/info "Auth failed")
-      (throw (Exception. "Authentication failed.")))))
+    (doto "Auth succeeded" log/info)
+    (log/info "Auth failed")))
