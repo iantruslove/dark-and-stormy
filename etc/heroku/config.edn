@@ -1,4 +1,4 @@
-{:metrics {:url "http://192.168.100.48:9200"
+{:metrics {:url "http://104.131.152.18:9200"
            :index "metrics-2015"
 
            ;; ES templates, keyed by template name.
