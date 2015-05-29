@@ -11,10 +11,13 @@
             [ring.middleware.params :refer [wrap-params]])
   (:import (java.util Date)))
 
+
+
 (defn req->metrics [req auth-succeeded?]
-  (let [ip (if-let [override (get-in req [:headers "x-remote-addr-override"])]
-             override
-             (:remote-addr req))]
+  (let [ip (some identity
+                 [(get-in req [:headers "x-remote-addr-override"])
+                  (get-in req [:headers "x-forwarded-for"])
+                  (:remote-addr req)])]
     (merge {:timestamp (Date.)
             :ip ip
             :auth-result (if auth-succeeded? "pass" "fail")

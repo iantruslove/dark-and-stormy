@@ -68,7 +68,14 @@
                            {:webserver [:config :metrics]
                             :metrics [:config]}))]
       (let [base-url (str "http://localhost:" (config/config (:config sys) :webserver :port))]
-        (http/get (str base-url "/login?username=foo@password=bar")
-                  {:throw-exceptions false
-                   :headers {"x-remote-addr-override" "4.53.74.173"}})
-        (is (= "4.53.74.173" (:ip @last-sent-metric)))))))
+        (testing "x-remote-addr-override"
+          (http/get (str base-url "/login?username=foo@password=bar")
+                    {:throw-exceptions false
+                     :headers {"x-remote-addr-override" "4.53.74.173"
+                               "x-forwarded-for" "1.2.3.4"}})
+          (is (= "4.53.74.173" (:ip @last-sent-metric))))
+        (testing "x-forwarded-for - e.g. for Heroku"
+          (http/get (str base-url "/login?username=foo@password=bar")
+                    {:throw-exceptions false
+                     :headers {"x-forwarded-for" "1.2.3.4"}})
+          (is (= "1.2.3.4" (:ip @last-sent-metric))))))))
