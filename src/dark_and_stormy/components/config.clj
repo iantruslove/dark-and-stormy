@@ -10,7 +10,13 @@
   (start [this]
     (log/info "Starting Config")
     ;; Reset all of Carica's state
-    (assoc this :config (carica/configurer (io/resource "config.edn"))))
+    (let [config (carica/configurer (io/resource "config.edn"))
+          override-config (carica/overrider* config)]
+      ;; Heroku sets a PORT env var. That's important to capture.
+      (assoc this :config (if-let [env-port (System/getenv "PORT")]
+                            (do (log/info (str "Overriding :webserver :port config to " env-port))
+                                (override-config :webserver :port (Integer. env-port)))
+                            config))))
 
   (stop [this]
     (log/info "Stopping Config")
