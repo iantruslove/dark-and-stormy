@@ -50,19 +50,24 @@
   [this]
   (config/config (:config this) :metrics :index))
 
-;; TODO: I wonder whether this wants to be a protocol...
-;; TODO: something else is trying to escape this, or the Metrics
-;; instance. Look at how `this` gets used - it's just a carrier for
-;; config.
-(defn send
+(defprotocol MetricsService
+  (send [this metric-type data]))
+
+(defn send*
   "Sends a data payload to the metrics datastore.
   `data` should be a map."
-  [this metric-type data]
-  (log/info (http/post (make-url this (current-index this) "/" metric-type)
-                       {:debug true
-                        :body (json/generate-string data)})))
+  [es-url metric-type data]
+  (log/debug data)
+  (try
+    (http/post es-url {:body (json/generate-string data)})
+    (catch Throwable t
+      (log/error t "Error sending metric to Metrics service."))))
 
 (defrecord Metrics [config url]
+  MetricsService
+  (send [this metric-type data]
+    (send* (make-url this (current-index this) "/" metric-type) metric-type data))
+
   component/Lifecycle
   (start [this]
     (if-not (:url this)
