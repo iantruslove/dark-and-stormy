@@ -19,8 +19,9 @@
     (if-not (:server this)
       (let [port (config/config config :webserver :port)]
         (log/info "Starting JettyWebserver on port" port)
-        (assoc this :server (jetty/run-jetty (wrap-metrics-component handler (:metrics this))
-                                             {:port port :join? false})))
+        (assoc this :server
+               (jetty/run-jetty (wrap-metrics-component handler (:metrics this))
+                                {:port port :join? false})))
       (do
         (log/warn "Skipping starting webserver - it's already started")
         this)))
@@ -39,7 +40,8 @@
   status/Status
   (status [this]
     (if (:server this)
-      (str "STARTED. Listening on port " (config/config (:config this) :webserver :port))
+      (str "STARTED. Listening on port "
+           (config/config (:config this) :webserver :port))
       "STOPPED.")))
 
 (defn new
