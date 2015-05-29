@@ -1,7 +1,13 @@
 (ns dark-and-stormy.test.api
-  (:require [dark-and-stormy.api :refer :all]
+  (:require [clj-http.client :as http]
+            [clojure.test :refer :all]
+            [com.stuartsierra.component :as component]
+            [dark-and-stormy.api :refer :all]
+            [dark-and-stormy.components.config :as config]
+            [dark-and-stormy.components.metrics :as metrics]
+            [dark-and-stormy.components.webserver :as webserver]
             [dark-and-stormy.geolocation :as geo]
-            [clojure.test :refer :all]))
+            [dark-and-stormy.test.helpers :refer [with-system]]))
 
 (deftest test-extracting-metrics-data-from-req
   (let [req {:protocol "HTTP/1.1"
@@ -44,3 +50,25 @@
     (let [loc (:geo_location metrics)]
       (is (< 42.5 (:lat loc) 42.6))
       (is (< -83.5 (:lon loc) -83.4)))))
+
+(defrecord StubMetrics [config last-sent-metric]
+  ;; No need to implement component/Lifecycle, since Object already
+  ;; has a stub implementation.
+  metrics/MetricsService
+  (send [this metric-type data]
+    (reset! (:last-sent-metric this) data)))
+
+(deftest test-ip-address-override
+  (let [last-sent-metric (atom nil)]
+    (with-system [sys (-> (component/system-map
+                           :config (config/map->Config {})
+                           :webserver (webserver/new #'routes)
+                           :metrics (map->StubMetrics {:last-sent-metric last-sent-metric}))
+                          (component/system-using
+                           {:webserver [:config :metrics]
+                            :metrics [:config]}))]
+      (let [base-url (str "http://localhost:" (config/config (:config sys) :webserver :port))]
+        (http/get (str base-url "/login?username=foo@password=bar")
+                  {:throw-exceptions false
+                   :headers {"x-remote-addr-override" "4.53.74.173"}})
+        (is (= "4.53.74.173" (:ip @last-sent-metric)))))))
