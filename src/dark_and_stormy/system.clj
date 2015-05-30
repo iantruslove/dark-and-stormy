@@ -25,7 +25,7 @@
 (defn init []
   (-> (component/system-map
        :api (api/map->Api {})
-       :auth (auth/map->DodgyAuth {})
+       :auth (auth/map->StormpathAuth {})
        :config (config/map->Config {})
        :metrics (metrics/map->Metrics {})
        :nrepl (nrepl/map->Nrepl {})

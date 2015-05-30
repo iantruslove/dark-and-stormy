@@ -3,6 +3,7 @@
             [clojure.tools.logging :as log]
             [dark-and-stormy.status :as status]
             [dark-and-stormy.auth.dodgy :as dodgy]
+            [dark-and-stormy.auth.stormpath :as stormpath]
             [dark-and-stormy.util.stats :as stats]))
 
 (defprotocol AuthService
@@ -23,3 +24,21 @@
   status/Status
   (status [this]
     "ok"))
+
+(defrecord StormpathAuth [client]
+  AuthService
+  (authenticate [this user pass]
+    (stormpath/authenticate (:client this) user pass))
+
+  component/Lifecycle
+  (start [this]
+    (assoc this :client (stormpath/make-client)))
+
+  (stop [this]
+    (dissoc this :client))
+
+  status/Status
+  (status [this]
+    (if (:client this)
+      "Client initialized"
+      "stopped")))
