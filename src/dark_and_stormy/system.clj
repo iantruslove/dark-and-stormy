@@ -1,6 +1,7 @@
 (ns dark-and-stormy.system
   (:require [com.stuartsierra.component :as component]
             [dark-and-stormy.components.api :as api]
+            [dark-and-stormy.components.auth :as auth]
             [dark-and-stormy.components.config :as config]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.components.nrepl :as nrepl]
@@ -24,12 +25,13 @@
 (defn init []
   (-> (component/system-map
        :api (api/map->Api {})
+       :auth (auth/map->DodgyAuth {})
        :config (config/map->Config {})
        :metrics (metrics/map->Metrics {})
        :nrepl (nrepl/map->Nrepl {})
        :webserver (webserver/map->JettyWebserver {}))
       (component/system-using
-       {:api [:metrics]
+       {:api [:auth :metrics]
         :metrics [:config]
         :nrepl [:config]
         :webserver [:api :config :metrics]})))

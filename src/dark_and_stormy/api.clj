@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [compojure.core :refer [defroutes ANY GET POST]]
             [compojure.route :as route]
-            [dark-and-stormy.auth :as auth]
+            [dark-and-stormy.components.auth :as auth]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.geolocation :as geo]
             [ring.util.request :as request]
@@ -35,8 +35,10 @@
   (metrics/send (get-in req [:component :metrics]) "auth" data))
 
 (defn login-handler [req]
-  (let [success (apply auth/authenticate ((juxt :username :password)
-                                          (:params req)))]
+  (let [success (apply auth/authenticate
+                       (get-in req [:component :auth])
+                       ((juxt :username :password)
+                        (:params req)))]
     (send-auth-metric req (req->metrics req success))
     (if success
       (response/redirect "/success.html")

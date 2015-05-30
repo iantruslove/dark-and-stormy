@@ -3,6 +3,7 @@
             [clojure.test :refer :all]
             [com.stuartsierra.component :as component]
             [dark-and-stormy.components.api :refer :all]
+            [dark-and-stormy.components.auth :as auth]
             [dark-and-stormy.components.config :as config]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.components.webserver :as webserver]
@@ -21,11 +22,12 @@
   (let [last-sent-metric (atom nil)]
     (with-system [sys (-> (component/system-map
                            :api (map->Api {})
+                           :auth (auth/map->DodgyAuth {})
                            :config (config/map->Config {})
                            :metrics (map->StubMetrics {:last-sent-metric last-sent-metric})
                            :webserver (webserver/map->JettyWebserver {}))
                           (component/system-using
-                           {:api [:metrics]
+                           {:api [:auth :metrics]
                             :metrics [:config]
                             :webserver [:api :config :metrics]}))]
       (let [base-url (str "http://localhost:" (config/config (:config sys) :webserver :port))]

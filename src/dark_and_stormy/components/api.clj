@@ -12,7 +12,7 @@
       (wrap-component this)
       api/wrap-log-exceptions))
 
-(defrecord Api [metrics]
+(defrecord Api [auth metrics]
   component/Lifecycle
   (start [this]
     (assert (:metrics this))

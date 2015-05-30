@@ -1,4 +1,4 @@
-(ns dark-and-stormy.auth
+(ns dark-and-stormy.auth.dodgy
   (:require [clojure.tools.logging :as log]
             [dark-and-stormy.util.stats :as stats]))
 
