@@ -23,11 +23,13 @@
 
 (defn init []
   (-> (component/system-map
+       :api (api/map->Api {})
        :config (config/map->Config {})
        :metrics (metrics/map->Metrics {})
-       :webserver (webserver/new #'api/routes)
-       :nrepl (nrepl/map->Nrepl {}))
+       :nrepl (nrepl/map->Nrepl {})
+       :webserver (webserver/map->JettyWebserver {}))
       (component/system-using
-       {:webserver [:config :metrics]
+       {:api [:metrics]
         :metrics [:config]
-        :nrepl [:config]})))
+        :nrepl [:config]
+        :webserver [:api :config :metrics]})))

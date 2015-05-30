@@ -1,17 +1,17 @@
 (ns dark-and-stormy.api
   (:require [clojure.tools.logging :as log]
+            [com.stuartsierra.component :as component]
             [compojure.core :refer [defroutes ANY GET POST]]
             [compojure.route :as route]
             [dark-and-stormy.auth :as auth]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.geolocation :as geo]
+            [dark-and-stormy.status :as status]
             [ring.util.request :as request]
             [ring.util.response :as response]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.params :refer [wrap-params]])
   (:import (java.util Date)))
-
-
 
 (defn req->metrics [req auth-succeeded?]
   (let [ip (some identity
@@ -34,7 +34,7 @@
                {:geolocation_error_reason (.getMessage e)})))))
 
 (defn send-auth-metric [req data]
-  (metrics/send (:metrics req) "auth" data))
+  (metrics/send (get-in req [:component :metrics]) "auth" data))
 
 (defn login-handler [req]
   (let [success (apply auth/authenticate ((juxt :username :password)
@@ -59,4 +59,24 @@
                 (-> (response/response "Oh dear. We had a problem.")
                     (response/status 500))))))
 
-(def routes (wrap-log-exceptions routes*))
+(defn wrap-component [handler component]
+  (fn [req]
+    (handler (assoc req :component component))))
+
+(defn routes [this]
+  (-> #'routes*
+      (wrap-component this)
+      wrap-log-exceptions))
+
+(defrecord Api [metrics]
+  component/Lifecycle
+  (start [this]
+    (assert (:metrics this))
+    this)
+
+  (stop [this]
+    this)
+
+  status/Status
+  (status [this]
+    "ok"))

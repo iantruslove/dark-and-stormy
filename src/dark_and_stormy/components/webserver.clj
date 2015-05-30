@@ -2,25 +2,18 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [dark-and-stormy.components.config :as config]
+            [dark-and-stormy.api :as api] ;; <---- TODO: split into api and components.api
             [dark-and-stormy.status :as status]
             [ring.adapter.jetty :as jetty]))
 
-(defn wrap-metrics-component
-  "Ring middleware that adds the metrics service to the request object."
-  [handler metrics]
-  (fn [req]
-    (-> req
-        (assoc :metrics metrics)
-        handler)))
-
-(defrecord JettyWebserver [config metrics server handler]
+(defrecord JettyWebserver [api config metrics server]
   component/Lifecycle
   (start [this]
     (if-not (:server this)
       (let [port (config/config config :webserver :port)]
         (log/info "Starting JettyWebserver on port" port)
         (assoc this :server
-               (jetty/run-jetty (wrap-metrics-component handler (:metrics this))
+               (jetty/run-jetty (api/routes (:api this))
                                 {:port port :join? false})))
       (do
         (log/warn "Skipping starting webserver - it's already started")
@@ -43,8 +36,3 @@
       (str "STARTED. Listening on port "
            (config/config (:config this) :webserver :port))
       "STOPPED.")))
-
-(defn new
-  "Return a new unstarted webserver component."
-  [handler]
-  (map->JettyWebserver {:handler handler}))
