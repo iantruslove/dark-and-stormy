@@ -66,7 +66,9 @@
 (defrecord Metrics [config url]
   MetricsService
   (send [this metric-type data]
-    (send* (make-url this (current-index this) "/" metric-type) metric-type data))
+    (if (re-find #"^\d+\.\d+.\d+\.\d+$" (:ip data))
+      (send* (make-url this (current-index this) "/" metric-type) metric-type data)
+      (log/warn "Invalid IP address:" (:ip data))))
 
   component/Lifecycle
   (start [this]
