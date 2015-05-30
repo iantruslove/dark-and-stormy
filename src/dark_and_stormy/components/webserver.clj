@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]
             [dark-and-stormy.components.config :as config]
-            [dark-and-stormy.api :as api] ;; <---- TODO: split into api and components.api
+            [dark-and-stormy.components.api :as api]
             [dark-and-stormy.status :as status]
             [ring.adapter.jetty :as jetty]))
 

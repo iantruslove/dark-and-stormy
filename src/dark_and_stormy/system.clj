@@ -1,6 +1,6 @@
 (ns dark-and-stormy.system
   (:require [com.stuartsierra.component :as component]
-            [dark-and-stormy.api :as api]
+            [dark-and-stormy.components.api :as api]
             [dark-and-stormy.components.config :as config]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.components.nrepl :as nrepl]
