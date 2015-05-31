@@ -15,10 +15,12 @@
   ;; has a stub implementation.
   )
 
+(defrecord FakeAuth [])
+
 (deftest test-running-webserver
   (with-system [sys (-> (component/system-map
                          :api (api/map->Api {})
-                         :auth (auth/map->DodgyAuth {})
+                         :auth (->FakeAuth)
                          :config (config/map->Config {})
                          :metrics (map->FakeMetrics {})
                          :webserver (webserver/map->JettyWebserver {}))

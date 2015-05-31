@@ -18,11 +18,16 @@
   (send [this metric-type data]
     (reset! (:last-sent-metric this) data)))
 
+(defrecord StubAuth []
+  auth/AuthService
+  (authenticate [this user pass]
+    true))
+
 (deftest test-ip-address-override
   (let [last-sent-metric (atom nil)]
     (with-system [sys (-> (component/system-map
                            :api (map->Api {})
-                           :auth (auth/map->DodgyAuth {})
+                           :auth (->StubAuth)
                            :config (config/map->Config {})
                            :metrics (map->StubMetrics {:last-sent-metric last-sent-metric})
                            :webserver (webserver/map->JettyWebserver {}))
