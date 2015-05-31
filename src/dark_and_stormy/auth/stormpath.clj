@@ -5,7 +5,8 @@
            (com.stormpath.sdk.api ApiKeys)
            (com.stormpath.sdk.application Applications)
            (com.stormpath.sdk.authc UsernamePasswordRequest)
-           (com.stormpath.sdk.resource ResourceException)))
+           (com.stormpath.sdk.resource ResourceException)
+           (org.joda.time DateTime)))
 
 (defn make-client []
   (let [api-key-builder (.build (ApiKeys/builder))]
@@ -27,6 +28,11 @@
   (UsernamePasswordRequest. ^java.lang.String user
                             ^java.lang.String pass))
 
+(defn resource-exception-data [^ResourceException e]
+  {:code (.getCode e)
+   :developer-message (.getDeveloperMessage e)
+   :status (.getStatus e)})
+
 ;; TODO: It would be simpler (but not necessarily easier) to use the
 ;; REST API and have this return the URI instead of the Account
 ;; object.
@@ -38,9 +44,7 @@
     (.getAccount (.authenticateAccount (get-application client "dark and stormy")
                                        (auth-request user pass)))
     (catch ResourceException e
-      (log/info "Auth failed." {:code (.getCode e)
-                                :developer-message (.getDeveloperMessage e)
-                                :status (.getStatus e)}))))
+      (log/info "Auth failed." (resource-exception-data e)))))
 
 (defn custom-data-href [client account]
   (let [href (.getHref (.getCustomData ^com.stormpath.sdk.resource.Extendable account))]
@@ -71,11 +75,34 @@
           custom-data-metadata-keys)))
 
 (defn set-custom-data [client account data]
-  (-> ^com.stormpath.sdk.resource.Extendable account
-      .getCustomData .delete)
+  (try (-> ^com.stormpath.sdk.resource.Extendable account
+           .getCustomData .delete)
+       (catch ResourceException e
+         (log/warn "Error deleting custom data." (resource-exception-data e))))
   (doto (get-custom-data* client account)
-    (.putAll (into {} (walk/stringify-keys data)))
+    (.putAll (walk/stringify-keys data))
     .save))
 
 (defn empty-custom-data [client account]
   (set-custom-data client account {}))
+
+(defn add-location-entry
+  "Appends a new location to custom-data's :location."
+  [location custom-data]
+  (let [updated-data (update-in custom-data [:locations]
+                                (fn [locations]
+                                  (conj (into [] locations) location)))]
+    updated-data))
+
+(defn record-auth-result
+  "Stores a map of [:lat :lon :timestamp] in the account's :location
+  custom data field."
+  [client authenticated-user {:keys [geo_location timestamp] :as auth-request-data}]
+  ;; TODO: authc fails are interesting too. Look up the account a different way.
+  (when-let [account authenticated-user]
+    (log/info "Updating user custom data:" auth-request-data)
+    ;; TODO: make this threading form threadsafe. It's not. That's a problem.
+    (->> (get-custom-data client account)
+         (add-location-entry (assoc geo_location
+                               :timestamp (str (DateTime. timestamp))))
+         (set-custom-data client account))))

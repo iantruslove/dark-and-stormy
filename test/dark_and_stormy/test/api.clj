@@ -38,15 +38,15 @@
              :query-string nil
              :body "streamy thing"
              :scheme :http
-             :request-method :post}
-        metrics (req->metrics req false)]
-    (are [k expected-val] (= expected-val (metrics k))
-         :local_timezone "America/Detroit"
-         :ip "4.53.74.173"
-         :geo_country_code "US"
-         :geo_region "MI"
-         :auth-result "fail"
-         :user "guest")
-    (let [loc (:geo_location metrics)]
-      (is (< 42.5 (:lat loc) 42.6))
-      (is (< -83.5 (:lon loc) -83.4)))))
+             :request-method :post}]
+    (is (= {:ip "4.53.74.173"
+            :user "guest"}
+           (dissoc (get-basic-data req) :timestamp)))
+    (let [geo-data (-> req get-basic-data add-geolocation-data)]
+      (is (= {:geo_country_code "US"
+              :geo_region "MI"
+              :local_timezone "America/Detroit"}
+             (dissoc geo-data :geo_location :timestamp :ip :user)))
+      (let [loc (:geo_location geo-data)]
+        (is (< 42.5 (:lat loc) 42.6))
+        (is (< -83.5 (:lon loc) -83.4))))))

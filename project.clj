@@ -16,6 +16,7 @@
                  [com.stuartsierra/component "0.2.3"]
                  [compojure "1.3.4"]
                  [doric "0.9.0"]
+                 [joda-time/joda-time "2.8"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jmdk/jmxtools
