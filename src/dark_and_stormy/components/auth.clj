@@ -6,11 +6,11 @@
             [dark-and-stormy.util.stats :as stats]))
 
 (defprotocol AuthService
-  (authenticate [this user pass]))
+  (authenticate [this auth-data]))
 
 (defrecord StormpathAuth [client]
   AuthService
-  (authenticate [this user pass]
+  (authenticate [this {:keys [user pass] :as auth-data}]
     (stormpath/authenticate (:client this) user pass))
 
   component/Lifecycle

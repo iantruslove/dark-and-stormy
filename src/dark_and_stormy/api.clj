@@ -37,8 +37,7 @@
 (defn login-handler [req]
   (let [success (apply auth/authenticate
                        (get-in req [:component :auth])
-                       ((juxt :username :password)
-                        (:params req)))]
+                       (select-keys (:params req) [:username :password]))]
     (send-auth-metric req (req->metrics req success))
     (if success
       (response/redirect "/success.html")

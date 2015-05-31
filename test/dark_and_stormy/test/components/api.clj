@@ -20,7 +20,7 @@
 
 (defrecord StubAuth []
   auth/AuthService
-  (authenticate [this user pass]
+  (authenticate [this auth-data]
     true))
 
 (deftest test-ip-address-override
