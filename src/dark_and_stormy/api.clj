@@ -4,7 +4,7 @@
             [compojure.route :as route]
             [dark-and-stormy.components.auth :as auth]
             [dark-and-stormy.components.metrics :as metrics]
-            [dark-and-stormy.geolocation :as geo]
+            [dark-and-stormy.geo :as geo]
             [ring.util.request :as request]
             [ring.util.response :as response]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]

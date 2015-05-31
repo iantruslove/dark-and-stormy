@@ -1,5 +1,5 @@
-(ns dark-and-stormy.test.geolocation.ip-api-com
-  (:require [dark-and-stormy.geolocation.ip-api-com :refer :all]
+(ns dark-and-stormy.test.geo
+  (:require [dark-and-stormy.geo :refer :all]
             [clojure.test :refer :all]))
 
 (deftest the-basics

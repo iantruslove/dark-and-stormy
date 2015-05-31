@@ -7,7 +7,7 @@
             [dark-and-stormy.components.config :as config]
             [dark-and-stormy.components.metrics :as metrics]
             [dark-and-stormy.components.webserver :as webserver]
-            [dark-and-stormy.geolocation :as geo]
+            [dark-and-stormy.geo :as geo]
             [dark-and-stormy.test.helpers :refer [with-system]])
   (:import (java.util Date)))
 

@@ -1,4 +1,4 @@
-(ns dark-and-stormy.geolocation
+(ns dark-and-stormy.geo
   (:require [clj-http.client :as http]
             [clojure.tools.logging :as log]
             [dark-and-stormy.util.rate-limit :refer [rate-limit]]))
