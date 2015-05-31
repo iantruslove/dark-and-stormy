@@ -100,7 +100,7 @@
                                         location)))]
     updated-data))
 
-(defn record-auth-result
+(defn track-velocity
   "Stores a map of [:lat :lon :timestamp] in the account's :location
   custom data field."
   [client authenticated-user {:keys [geo_location timestamp] :as auth-request-data}]
