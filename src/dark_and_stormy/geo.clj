@@ -1,7 +1,21 @@
 (ns dark-and-stormy.geo
   (:require [clj-http.client :as http]
             [clojure.tools.logging :as log]
-            [dark-and-stormy.util.rate-limit :refer [rate-limit]]))
+            [dark-and-stormy.util.rate-limit :refer [rate-limit]]
+            [geo.spatial :as spatial])
+  (:import (org.joda.time DateTime)))
+
+(defn velocity
+  "Returns the average velocity in m/s to travel between the two points.
+  Args must be maps of [:lat :lon :timestamp]."
+  [from to]
+  (let [metres (spatial/distance
+                (apply spatial/spatial4j-point ((juxt :lat :lon) from))
+                (apply spatial/spatial4j-point ((juxt :lat :lon) to)))
+        seconds (/ (- (.getTime (.toDate (DateTime. (:timestamp to))))
+                      (.getTime (.toDate (DateTime. (:timestamp from)))))
+                   1000)]
+    (/ metres seconds)))
 
 (defn geolocate*
   "Uses ip-api.com to geolocate an IP address. Returns a [lat lon] pair."
