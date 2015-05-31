@@ -22,7 +22,7 @@
             :user (get-in req [:params :username])}
            (try
              (let [{:keys [timezone country-code region] :as geo-data}
-                   (geo/geolocate :ip-api ip)]
+                   (geo/geolocate ip)]
                {:local_timezone timezone
                 :geo_country_code country-code
                 :geo_region region
