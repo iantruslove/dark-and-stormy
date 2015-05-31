@@ -45,4 +45,15 @@
   (is (= {:locations [{:lat 0 :lon 0 :timestamp 0}
                       {:lat 1 :lon 2 :timestamp :t}]}
          (add-location-entry {:lat 1 :lon 2 :timestamp :t}
-                             {:locations [{:lat 0 :lon 0 :timestamp 0}]}))))
+                             {:locations [{:lat 0 :lon 0 :timestamp 0}]})))
+  (let [updated-data (add-location-entry
+                      {:lat 1 :lon 2 :timestamp :t}
+                      {:locations (into [] (repeat 200 {:lat 0 :lon 0 :timestamp 0}))})]
+    (is (= 100 (-> updated-data
+                   :locations
+                   count)))
+    (is (= {:lat 1 :lon 2 :timestamp :t}
+           (->> updated-data
+                :locations
+                (take-last 1)
+                first)))))

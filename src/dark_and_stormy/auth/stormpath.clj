@@ -87,11 +87,17 @@
   (set-custom-data client account {}))
 
 (defn add-location-entry
-  "Appends a new location to custom-data's :location."
+  "Appends a new location to custom-data's :location.
+  Keeps only the most recent 100 locations."
   [location custom-data]
   (let [updated-data (update-in custom-data [:locations]
                                 (fn [locations]
-                                  (conj (into [] locations) location)))]
+                                  (conj (->> locations
+                                             (into [])
+                                             ;; TODO: sort by timestamp here
+                                             (take-last 99)
+                                             (into []))
+                                        location)))]
     updated-data))
 
 (defn record-auth-result
