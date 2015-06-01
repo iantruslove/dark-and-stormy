@@ -82,14 +82,14 @@
           custom-data-metadata-keys)))
 
 (defn set-custom-data [client account data]
-  ;; TODO: Make this operation atomic
-  (try (-> ^com.stormpath.sdk.resource.Extendable account
-           .getCustomData .delete)
-       (catch ResourceException e
-         (log/warn "Error deleting custom data." (resource-exception-data e))))
-  (doto (get-custom-data* client account)
-    (.putAll (walk/stringify-keys data))
-    .save))
+  (locking set-custom-data ;; Ugh... well, it's atomic now...
+    (try (-> ^com.stormpath.sdk.resource.Extendable account
+             .getCustomData .delete)
+         (catch ResourceException e
+           (log/warn "Error deleting custom data." (resource-exception-data e))))
+    (doto (get-custom-data* client account)
+      (.putAll (walk/stringify-keys data))
+      .save)))
 
 (defn empty-custom-data [client account]
   (set-custom-data client account {}))
