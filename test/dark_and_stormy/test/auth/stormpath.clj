@@ -21,7 +21,7 @@
                    (authenticate @client "guest" "guest")))))
 
 (deftest test-custom-data
-  (let [account (authenticate @client "user2" "user2")]
+  (let [account (authenticate @client "testuser" "testuser")]
     (is account "Guard assert")
     (empty-custom-data @client account)
     (is (= {} (get-custom-data @client account)))
@@ -64,3 +64,13 @@
                            {:lat 10 :lon 10 :timestamp "2015-05-10T13:00:00.000Z"}
                            {:lat 20 :lon 20 :timestamp "2015-05-10T14:00:00.000Z"}
                            {:lat 30 :lon 30 :timestamp "2015-05-10T15:00:00.000Z"}]))))
+
+(deftest test-group-membership
+  (let [group-name "test_group"
+        account (authenticate @client "testuser" "testuser")]
+    (remove-from-group account group-name)
+    (is (not (in-group? account group-name)))
+    (add-to-group @client account group-name)
+    (is (in-group? account group-name))
+    (remove-from-group account group-name)
+    (is (not (in-group? account group-name)))))

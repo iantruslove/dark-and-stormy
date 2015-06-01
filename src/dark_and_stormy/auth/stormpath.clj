@@ -9,6 +9,9 @@
            (com.stormpath.sdk.resource ResourceException)
            (org.joda.time DateTime)))
 
+;; TODO: This should be configured or injected
+(def application-name "dark and stormy")
+
 (defn make-client []
   (let [api-key-builder (.build (ApiKeys/builder))]
     (.build (.setApiKey (Clients/builder) api-key-builder))))
@@ -42,7 +45,7 @@
   [client user pass]
   (log/debug "Auth attempt with Stormpath for" user)
   (try
-    (.getAccount (.authenticateAccount (get-application client "dark and stormy")
+    (.getAccount (.authenticateAccount (get-application client application-name)
                                        (auth-request user pass)))
     (catch ResourceException e
       (log/info "Auth failed." (resource-exception-data e)))))
@@ -101,6 +104,56 @@
                                              (into []))
                                         location)))]
     updated-data))
+
+(defn application-groups
+  "Returns the set of all groups in this application."
+  [client application-name]
+  (let [application (get-application client application-name)]
+    (-> application
+        .getGroups
+        .iterator
+        iterator-seq
+        set)))
+
+(defn account-group-memberships [account]
+  "Returns a set of all the group memberships for an account."
+  (->> ^com.stormpath.sdk.account.Account account
+       .getGroupMemberships
+       .iterator
+       iterator-seq
+       set))
+
+(defn group-membership-group-name
+  "Returns the group name from a GroupMembership"
+  [^com.stormpath.sdk.group.GroupMembership membership]
+  (-> membership
+      .getGroup
+      .getName))
+
+(defn in-group? [account group-name]
+  (->> (account-group-memberships account)
+       (map group-membership-group-name)
+       (some #(= group-name %))))
+
+(defn add-to-group [client account group-name]
+  (if-let [group
+           ^com.stormpath.sdk.group.Group
+           (some (fn [^com.stormpath.sdk.group.Group group]
+                   (when (= group-name (.getName group))
+                     group))
+                 (application-groups client application-name))]
+    (if (in-group? account (.getName group))
+      (log/info "No need to add membership to group" (.getName group))
+      (.addGroup ^com.stormpath.sdk.account.Account account group))
+    (log/error "Group doesn't exist:" group-name)))
+
+(defn remove-from-group [account group-name]
+  (when-let [membership
+             (->> (account-group-memberships account)
+                  (some (fn [membership]
+                          (when (= group-name (group-membership-group-name membership))
+                            membership))))]
+    (.delete ^com.stormpath.sdk.group.GroupMembership membership)))
 
 (defn velocities
   "Returns the average speeds required for the last four logins."
