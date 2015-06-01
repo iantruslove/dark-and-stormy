@@ -28,8 +28,7 @@
                  [org.slf4j/slf4j-log4j12 "1.7.1"]
                  [ring "1.4.0-RC1"]
                  [sonian/carica "1.1.0"]]
-  :profiles {:dev {:resource-paths ["etc/dev"]
+  :profiles {:dev {:resource-paths ["etc"]
                    :global-vars {clojure.core/*warn-on-reflection* true}
                    :plugins [[lein-deps-tree "0.1.2"]]}
-             :uberjar {:resource-paths ["etc/heroku"]
-                       :aot :all}})
+             :uberjar {:aot :all}})
