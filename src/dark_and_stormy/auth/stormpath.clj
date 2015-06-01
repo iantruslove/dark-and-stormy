@@ -66,6 +66,9 @@
                 (custom-data-href client account)
                 com.stormpath.sdk.directory.CustomData))
 
+;; TODO: I think it might be nicer to deal with data fields more
+;; discretely - so instead of (get-custom-data c a), do
+;; (get-custom-data c a :some-key).
 (defn get-custom-data
   "Returns a map of the account's custom data fields.
   Does not return metadata fields."
