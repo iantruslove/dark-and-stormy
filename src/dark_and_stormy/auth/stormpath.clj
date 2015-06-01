@@ -159,16 +159,20 @@
   "Returns the average speeds required for the last four logins."
   [locations]
   (->> locations
+       (into [])
        (take-last 4)
+       (map (partial into {}))
+       (map walk/keywordize-keys)
        (partition 2 1)
        (map (partial apply geo/velocity))))
 
 (defn velocity-check [client account locations]
   (let [velocities (velocities locations)
         v-max (apply max velocities)]
-    (when (< 312 ;; 312m/s = 700mph
-             v-max)
-      (log/info "Account triggered velocity alarm. Velocity" v-max "m/s"))))
+    (if (> v-max 312 #_ "312m/s = 700mph")
+      (do (log/info "Account triggered velocity alarm. Velocity" v-max "m/s of" velocities)
+          (add-to-group client account "suspicious_velocity"))
+      (log/debug "Velocity ok: max " v-max "of" velocities))))
 
 (defn track-velocity
   "Stores a map of [:lat :lon :timestamp] in the account's :location
