@@ -1,6 +1,7 @@
 (ns dark-and-stormy.auth.stormpath
   (:require [clojure.tools.logging :as log]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [dark-and-stormy.geo :as geo])
   (:import (com.stormpath.sdk.client Client Clients)
            (com.stormpath.sdk.api ApiKeys)
            (com.stormpath.sdk.application Applications)
@@ -75,6 +76,7 @@
           custom-data-metadata-keys)))
 
 (defn set-custom-data [client account data]
+  ;; TODO: Make this operation atomic
   (try (-> ^com.stormpath.sdk.resource.Extendable account
            .getCustomData .delete)
        (catch ResourceException e
@@ -100,15 +102,32 @@
                                         location)))]
     updated-data))
 
+(defn velocities
+  "Returns the average speeds required for the last four logins."
+  [locations]
+  (->> locations
+       (take-last 4)
+       (partition 2 1)
+       (map (partial apply geo/velocity))))
+
+(defn velocity-check [client account locations]
+  (let [velocities (velocities locations)
+        v-max (apply max velocities)]
+    (when (< 312 ;; 312m/s = 700mph
+             v-max)
+      (log/info "Account triggered velocity alarm. Velocity" v-max "m/s"))))
+
 (defn track-velocity
   "Stores a map of [:lat :lon :timestamp] in the account's :location
   custom data field."
   [client authenticated-user {:keys [geo_location timestamp] :as auth-request-data}]
   ;; TODO: authc fails are interesting too. Look up the account a different way.
   (when-let [account authenticated-user]
-    (log/info "Updating user custom data:" auth-request-data)
+    (log/debug "Updating user custom data:" auth-request-data)
     ;; TODO: make this threading form threadsafe. It's not. That's a problem.
-    (->> (get-custom-data client account)
-         (add-location-entry (assoc geo_location
-                               :timestamp (str (DateTime. timestamp))))
-         (set-custom-data client account))))
+    (let [updated-data
+          (->> (get-custom-data client account)
+               (add-location-entry (assoc geo_location
+                                     :timestamp (str (DateTime. timestamp)))))]
+      (set-custom-data client account updated-data)
+      (velocity-check client account (:locations updated-data)))))

@@ -57,3 +57,10 @@
                 :locations
                 (take-last 1)
                 first)))))
+
+(deftest test-velocities
+  (is (every? (fn [v] (< 410 v 440))
+              (velocities [{:lat 0 :lon 0 :timestamp "2015-05-10T12:00:00.000Z"}
+                           {:lat 10 :lon 10 :timestamp "2015-05-10T13:00:00.000Z"}
+                           {:lat 20 :lon 20 :timestamp "2015-05-10T14:00:00.000Z"}
+                           {:lat 30 :lon 30 :timestamp "2015-05-10T15:00:00.000Z"}]))))
